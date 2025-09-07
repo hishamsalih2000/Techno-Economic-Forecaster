@@ -1,3 +1,5 @@
+# .gitignore
+
 # Python cache and environment files
 __pycache__/
 venv/
@@ -9,7 +11,17 @@ env/
 .idea/
 *.DS_Store
 
+# --- DATA, MODELS, & IMAGES ---
+data/raw/*
+data/processed/*
+data/homer_load_profiles
+data/homer_sim_results
+models/*
+images/*
 
-data/
-models/
-images/
+
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!models/.gitkeep
+!images/.gitkeep
+
