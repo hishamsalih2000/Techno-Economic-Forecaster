@@ -33,7 +33,7 @@ To transform the manual simulation process into a predictive model, I followed a
 1.  **Simulation Blueprint:** A plan was created to generate 50 unique scenarios, varying farm location, size, and borehole depth, based on the validated methodology from the thesis.
 2.  **Input Automation:** A Python script was developed to automate the creation of 50 unique, hourly load profile (`.dmd`) files for HOMER Pro.
 3.  **Simulation Execution:** Each scenario was simulated in HOMER Pro to find the optimal PV system configuration.
-4.  **Results Aggregation:** A second Python script was created to automatically parse all 50 raw result files and build the clean, final dataset.
+4.  **Data Persistence:** The final, cleaned dataset was written to a persistent **SQLite database**, moving the project from a flat-file system to a more robust, queryable data storage solution.
 
 **Phase 2: Professional Model Training**
 A robust training pipeline was built using Scikit-learn, incorporating best practices like `Pipelines` for preprocessing, `RandomizedSearchCV` for hyperparameter tuning, and 5-fold cross-validation for reliable evaluation.

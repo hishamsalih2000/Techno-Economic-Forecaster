@@ -1,60 +1,39 @@
 # src/aggregate_results.py
 
 import pandas as pd
-import pathlib
+import sqlite3
+import config 
 
-print("Starting script to aggregate HOMER simulation results...")
-
-# --- Configuration ---
-# Define all the paths we will be using
-PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
-SIMULATION_PARAMETERS_FILE = PROJECT_ROOT / "data" / "raw" / "homer_simulations.csv"
-RESULTS_DIR = PROJECT_ROOT / "data" / "homer_sim_results"
-PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
-FINAL_DATASET_FILE = PROCESSED_DATA_DIR / "final_ml_dataset.csv"
-
-# Create the processed data folder if it doesn't exist
-PROCESSED_DATA_DIR.mkdir(exist_ok=True)
+print("Starting script to aggregate HOMER results into SQL database...")
 
 # --- Load the master list of simulation inputs ---
 try:
-    main_df = pd.read_csv(SIMULATION_PARAMETERS_FILE)
+    main_df = pd.read_csv(config.RAW_DATA_INPUT_FILE)
     print(f"Successfully loaded {len(main_df)} simulation parameters.")
 except FileNotFoundError:
-    print(f"ERROR: Could not find the main simulation file at {SIMULATION_PARAMETERS_FILE}")
+    print(f"ERROR: Could not find the raw input file at {config.RAW_DATA_INPUT_FILE}")
+    print("Please ensure your 'homer_simulations.csv' is in the 'data/raw' folder.")
     exit()
 
-# --- Loop through each simulation, find its result file, and extract the data ---
+# --- Loop through each simulation and extract the data ---
 results_list = []
 for index, row in main_df.iterrows():
     sim_id = int(row['Simulation_ID'])
-    
-    # Construct the path to the result file for this simulation
-    results_file_path = RESULTS_DIR / f"sim_{sim_id}_results.csv"
+    # Use the new config variable for the results directory
+    results_file_path = config.HOMER_RESULTS_DIR / f"sim_{sim_id}_results.csv"
     
     if results_file_path.exists():
         try:
-            print(f"  -> Processing results for Simulation #{sim_id}...")
-            # Load the results CSV
             result_df = pd.read_csv(results_file_path, sep=',', skiprows=1)
-            
-            # The best result is always the first row of the file
             optimal_result = result_df.iloc[0]
             
-            # Extract the three key values using their exact column names
-            pv_size = optimal_result['Architecture/PV (kW)']
-            npc = optimal_result['Cost/NPC ($)']
-            lcoe = optimal_result['Cost/LCOE ($/kWh)']
-            
-            # Store the extracted data in a dictionary
             extracted_data = {
                 'Simulation_ID': sim_id,
-                'Required_PV_Size_kW': pv_size,
-                'NPC_USD': npc,
-                'LCOE_USD_per_kWh': lcoe
+                'Required_PV_Size_kW': optimal_result['Architecture/PV (kW)'],
+                'NPC_USD': optimal_result['Cost/NPC ($)'],
+                'LCOE_USD_per_kWh': optimal_result['Cost/LCOE ($/kWh)']
             }
             results_list.append(extracted_data)
-
         except Exception as e:
             print(f"  -> ERROR processing file {results_file_path}: {e}. Skipping.")
     else:
@@ -62,18 +41,26 @@ for index, row in main_df.iterrows():
 
 print(f"\nSuccessfully processed {len(results_list)} result files.")
 
-# --- Combine the inputs and results and save the final dataset ---
+# --- Combine inputs and results ---
 if results_list:
-    # Convert the list of results into a DataFrame
     results_df = pd.DataFrame(results_list)
-    
-    # Merge the original input parameters with the new results based on the Simulation_ID
     final_dataset = pd.merge(main_df, results_df, on='Simulation_ID')
     
-    # Save the final, clean dataset to the processed folder
-    final_dataset.to_csv(FINAL_DATASET_FILE, index=False)
+    # Write to SQL Database ---
+    print(f"Connecting to database at: {config.DATABASE_PATH}")
+    # This creates a connection; the file will be created if it doesn't exist.
+    con = sqlite3.connect(config.DATABASE_PATH)
     
-    print(f"Successfully created the final dataset with {len(final_dataset)} entries.")
-    print(f"Final dataset saved to: {FINAL_DATASET_FILE}")
+    # Use pandas' .to_sql() method to write the DataFrame to a table.
+    # if_exists='replace' means it will overwrite the table every time you run it.
+    final_dataset.to_sql(
+        config.TABLE_NAME, 
+        con, 
+        if_exists='replace', 
+        index=False
+    )
+    
+    print(f"Successfully wrote {len(final_dataset)} entries to table '{config.TABLE_NAME}' in the database.")
+    con.close() # Close the connection
 else:
-    print("No results were processed. The final dataset was not created.")
+    print("No results were processed. Database was not written.")

@@ -19,6 +19,8 @@ data/homer_sim_results
 models/*
 images/*
 
+#Ignore database files
+*.db
 
 !data/raw/.gitkeep
 !data/processed/.gitkeep

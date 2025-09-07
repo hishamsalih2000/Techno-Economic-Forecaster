@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import pathlib
+import sqlite3
 
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.pipeline import Pipeline
@@ -109,11 +110,19 @@ def train_and_evaluate_model(df, features, target_column, model_save_path, unit_
 if __name__ == "__main__":
     print("--- Starting Full Model Training and Evaluation Pipeline ---")
     
+    # --- Read from SQL Database ---
     try:
-        main_df = pd.read_csv(config.FINAL_DATASET_PATH)
-        print(f"Successfully loaded dataset with {len(main_df)} entries.")
-    except FileNotFoundError:
-        print(f"ERROR: Could not find the dataset at {config.FINAL_DATASET_PATH}")
+        print(f"Connecting to database to load training data...")
+        con = sqlite3.connect(config.DATABASE_PATH)
+        # Write a simple SQL query to select all data from our table
+        query = f"SELECT * FROM {config.TABLE_NAME}"
+        # Use pandas' read_sql_query to load the data directly into a DataFrame
+        main_df = pd.read_sql_query(query, con)
+        con.close()
+        print(f"Successfully loaded dataset with {len(main_df)} entries from the database.")
+    except Exception as e:
+        print(f"ERROR: Could not load data from the database. {e}")
+        print("Please make sure you have run 'src/aggregate_results.py' first.")
         exit()
 
     # --- Train Model 1: Predict PV System Size ---
