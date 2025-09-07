@@ -12,7 +12,7 @@ This project demonstrates a professional "bridge candidate" workflow, combining 
 
 The motivation for this project is grounded in my Bachelor of Science thesis, which conducted a deep-dive techno-economic analysis of solar vs. diesel irrigation for a 10-hectare farm in Sudan.
 
-**[View the full thesis here.](https://github.com/hishamsalih2000/academic-work/blob/main/Techno-Economic%20Feasibility%20of%20Solar-Powered%20Irrigation%20Systems.pdf)**
+**[View the full thesis here.](https://github.com/hishamsalih2000/academic-work/blob/main/BSc_Thesis_Solar_Energy_Feasibility_Study.pdf)**
 
 The thesis uncovered a clear and compelling business case:
 *   **Massive Long-Term Savings:** While a diesel system has a lower initial cost, its 25-year lifetime cost (NPC) is **over 3.5 times higher** than a solar PV alternative ($45,177 vs. $12,890).
