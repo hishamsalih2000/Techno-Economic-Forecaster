@@ -25,3 +25,6 @@ images/*
 !models/.gitkeep
 !images/.gitkeep
 
+# The app needs these files to run.
+!models/pv_size_predictor.joblib
+!models/npc_predictor.joblib
