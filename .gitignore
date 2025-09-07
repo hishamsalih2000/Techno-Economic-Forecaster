@@ -1,0 +1,15 @@
+# Python cache and environment files
+__pycache__/
+venv/
+*.pyc
+env/
+
+# IDE and OS specific files
+.vscode/
+.idea/
+*.DS_Store
+
+
+data/
+models/
+images/
