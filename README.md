@@ -52,12 +52,13 @@ The models demonstrate strong predictive power and have learned the correct unde
 
 ![PV Size Performance Plot](./images/pv_size_predictor_performance_plot.png)
 
-### Model 2: Net Present Cost (NPC) Predictor
+### Model 2: Solar Net Present Cost (NPC) Predictor
 *   **Best Cross-Validated R²:** 0.7734
 *   **Final Test Set R²:** 0.9372
 *   **Final Test Set MAE:** 2443.87 USD
 
 ![NPC Performance Plot](./images/npc_predictor_performance_plot.png)
+
 
 ## 5. How to Run This Project
 
@@ -71,11 +72,16 @@ The models demonstrate strong predictive power and have learned the correct unde
     ```bash
     pip install -r requirements.txt
     ```
-4.  To re-run the model training pipeline:
+
+4.  To create the database with the data:
+    ```bash
+    python -m src.aggregate_results
+    ```
+5.  To re-run the model training pipeline:
     ```bash
     python -m src.train_model
     ```
-5.  To launch the web application:
+6.  To launch the web application:
     ```bash
     streamlit run app.py
     ```

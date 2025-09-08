@@ -25,13 +25,14 @@ for index, row in main_df.iterrows():
     if results_file_path.exists():
         try:
             result_df = pd.read_csv(results_file_path, sep=',', skiprows=1)
-            optimal_result = result_df.iloc[0]
             
+            # Find the SOLAR-ONLY result (first row is usually the best overall)
+            solar_result = result_df.iloc[0]
+
             extracted_data = {
                 'Simulation_ID': sim_id,
-                'Required_PV_Size_kW': optimal_result['Architecture/PV (kW)'],
-                'NPC_USD': optimal_result['Cost/NPC ($)'],
-                'LCOE_USD_per_kWh': optimal_result['Cost/LCOE ($/kWh)']
+                'Required_PV_Size_kW': solar_result['Architecture/PV (kW)'],
+                'Solar_NPC_USD': solar_result['Cost/NPC ($)'], 
             }
             results_list.append(extracted_data)
         except Exception as e:

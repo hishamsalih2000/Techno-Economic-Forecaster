@@ -138,9 +138,10 @@ if __name__ == "__main__":
     train_and_evaluate_model(
         df=main_df,
         features=config.FEATURES,
-        target_column='NPC_USD',
+        target_column='Solar_NPC_USD',
         model_save_path=config.NPC_MODEL_PATH,
         unit_name='USD'
     )
+
 
     print("--- All models trained successfully. Script finished. ---")
